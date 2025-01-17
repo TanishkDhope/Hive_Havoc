@@ -1,16 +1,17 @@
 import pygame
 from os.path import join
 from sprites import *
-
+from timers import *
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self,pos,groups, collide_group):
+    def __init__(self,frames,pos,groups, collide_group, bullet_group):
         super().__init__(groups)
         self.groups=groups
+        self.bullet_group=bullet_group
         self.collision_sprites=collide_group
-        self.frames=[]
+        self.frames=frames
         self.frame_index=0
-        self.init_char()
+        self.image=self.frames[self.frame_index]
         self.rect=self.image.get_frect(center=pos)
         self.hitbox_rect=self.rect.inflate(-30,0)
         self.direction=pygame.Vector2(0,0)
@@ -20,23 +21,24 @@ class Player(pygame.sprite.Sprite):
         self.in_air=True
         self.flip=False
 
-    def init_char(self):
-        self.frames=[pygame.image.load(join("graphics","player",f"{image}.png")).convert_alpha() for image in range(3)]
-        self.frame_index=0
-        self.image=self.frames[self.frame_index]
+        #timers
+        self.shoot_timer=Timer(500)
+
 
     def input(self):
         keys=pygame.key.get_pressed()
         self.direction.x=int(keys[pygame.K_d]) - int(keys[pygame.K_a])
 
         if pygame.key.get_just_pressed()[pygame.K_w] and self.able_to_jump:
-            self.direction.y=-1.25
+            self.direction.y=-1.5
             self.able_to_jump=False
             self.in_air=True
         
-        if pygame.mouse.get_just_pressed()[0]:
-            Bullet(self.hitbox_rect.center, self.groups, self.flip)
-            Fire(self.groups,self)
+        if pygame.mouse.get_pressed()[0] and not self.shoot_timer:
+                Bullet(self.hitbox_rect.center, (self.groups,self.bullet_group), self.flip)
+                Fire(self.groups,self)
+                self.shoot_timer.activate()
+
 
     def move(self,dt):
         self.hitbox_rect.centerx+=self.direction.x*self.speed*dt
@@ -51,6 +53,7 @@ class Player(pygame.sprite.Sprite):
         self.hitbox_rect.y+=self.direction.y
         self.check_collision("y")
         self.rect.center=self.hitbox_rect.center
+        
 
     def animate(self,dt):
         if self.direction.x !=0 and not self.in_air:
@@ -89,6 +92,8 @@ class Player(pygame.sprite.Sprite):
     
 
     def update(self,dt):
+        self.shoot_timer.update()
         self.animate(dt)
         self.input()
         self.move(dt)
+

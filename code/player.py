@@ -41,7 +41,7 @@ class Player(pygame.sprite.Sprite):
         self.direction.x=int(keys[pygame.K_d]) - int(keys[pygame.K_a])
 
         if pygame.key.get_just_pressed()[pygame.K_w] and self.able_to_jump:
-            self.direction.y=-12
+            self.direction.y=-12.25
             self.able_to_jump=False
             self.in_air=True
         

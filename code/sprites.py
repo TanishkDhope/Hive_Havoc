@@ -12,6 +12,25 @@ class Sprite(pygame.sprite.Sprite):
         self.rect=self.image.get_frect(topleft=pos)
         self.ground=True
 
+
+class GUI(pygame.sprite.Sprite):
+    def __init__(self,frames,pos,groups,player):
+        super().__init__(groups)
+        self.player=player
+        self.frame_index=0
+        self.frames=frames
+        self.image=self.frames[self.frame_index]
+        self.rect=self.image.get_frect(center=pos)
+        self.gui=True
+        self.mask=pygame.mask.from_surface(self.image)
+
+    def update(self,dt):
+        self.lives=self.player.check_lives()
+        self.frame_index=5-self.lives
+        self.image=self.frames[self.frame_index]
+
+        
+
 class Collision_sprites(pygame.sprite.Sprite):
     def __init__(self, image, pos, groups):
         super().__init__(groups)
@@ -26,11 +45,13 @@ class Bullet(pygame.sprite.Sprite):
         self.image=pygame.transform.rotozoom(self.image, 0, 0.7)
         self.image=pygame.transform.flip(self.image,flip,False)
         self.rect=self.image.get_rect(center=(pos[0]+10,pos[1]+15))
-        self.speed=20
+        self.speed=1000
         self.spawn_time=pygame.time.get_ticks()
         if flip: self.direction=pygame.Vector2(-1,0) 
         else: self.direction=pygame.Vector2(1,0)
         self.mask=pygame.mask.from_surface(self.image)
+        self.shoot_sound=pygame.mixer.Sound(join("audio","shoot.wav")).play()
+
 
     
     def destroy(self):
@@ -86,12 +107,12 @@ class Bee(pygame.sprite.Sprite):
         self.frame_index=0
         self.image=self.frames[self.frame_index]
         self.rect=self.image.get_frect(center=pos)
-        self.animation_speed=0.1
-        self.amplitude=randint(5,15)
-        self.frequency=randint(400,600)
-        self.speed=randint(2,7)
+        self.animation_speed=10
+        self.amplitude=randint(50,100)
+        self.frequency=randint(1000,4000)
+        self.speed=randint(200,400)
         self.mask=pygame.mask.from_surface(self.image)
-        self.death_timer=Timer(1000, func=self.kill)
+        self.death_timer=Timer(500, func=self.kill)
 
     def move(self,dt):
         self.rect.centerx-=self.speed*dt
@@ -122,11 +143,11 @@ class Worm(pygame.sprite.Sprite):
         self.frame_index=0
         self.image=self.frames[self.frame_index]
         self.rect=self.image.get_frect(bottomleft=rect.bottomleft)
-        self.animation_speed=0.1
+        self.animation_speed=3
         self.direction=pygame.Vector2(1,0)
-        self.speed=randint(2,7)
+        self.speed=randint(70,95)
         self.mask=pygame.mask.from_surface(self.image)
-        self.timer=Timer(1000,func=self.kill)
+        self.timer=Timer(500,func=self.kill)
 
     def destroy(self):
         self.timer.activate()
@@ -152,5 +173,13 @@ class Worm(pygame.sprite.Sprite):
             self.move(dt)
             self.animate(dt)
 
-        
-        
+class Text():
+    def __init__(self,display_surface,pos,font,text,color):
+        self.display_surface=display_surface
+        self.pos=pos
+        self.font=font
+        self.color=color
+    
+    def draw(self,score):
+        self.text_surf=self.font.render(f"X {score}", True, self.color)
+        self.display_surface.blit(self.text_surf, self.pos)

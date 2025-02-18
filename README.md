@@ -6,10 +6,5 @@ Hive Havoc is a thrilling 2D platformer where you survive relentless bees and wo
 
 ## Demo
 
-https://youtu.be/VDVgoiGILqA
-
-
-## Screenshots
-
-![Image](https://github.com/user-attachments/assets/999d4b03-7be6-4ab5-b50b-7900a6c15d54)
+https://github.com/user-attachments/assets/edba5954-3a09-41bb-9741-a82a571b5382
 

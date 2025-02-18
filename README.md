@@ -11,5 +11,5 @@ https://youtu.be/VDVgoiGILqA
 
 ## Screenshots
 
-![Image Alt text](/screenshots/Preview1.png "Optional title")
+![Image](https://github.com/user-attachments/assets/999d4b03-7be6-4ab5-b50b-7900a6c15d54)
 
